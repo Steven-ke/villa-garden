@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			div{
+				width:50px;height:50px;background: rgba(255,255,0,0.0);position: absolute;left:0;top:0;background-position: 0px 0px;background-size: 1350px 550px;
+			}
+			.active{
+				
+				background-image: url(img/1.jpg);
+			}
+			
+		</style>
+		<script type="text/javascript">
+			window.onload = function(){
+//				var qDiv = document.querySelectorall('div');
+				 for(var i=0;i<11;i++){
+				 	for(var j=0; j<27;j++){
+				 		document.body.innerHTML += '<div style="background-position:'+(-j*50)+'px '+(-i*50)+'px;left:'+j*50+'px;top:'+i*50+'px;"></div>';
+				 	}
+				 	
+				 };
+				 var qDiv = document.querySelectorAll('div'); 
+				 for(i=0;i<qDiv.length;i++){
+				 	console.log(qDiv[i]);
+				 	qDiv[i].onmouseover = function(){
+				 		this.className = "active";
+				 	}
+				 	
+				 }
+				
+			}
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

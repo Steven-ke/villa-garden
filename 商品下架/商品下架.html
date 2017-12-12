@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>倒计时抢购商品</title>
+		<style>
+			body {
+				width: 828px;
+				margin: 0 auto;
+				background-color: skyblue;
+			}
+			
+			html,
+			ul {
+				margin: 0;
+				padding: 0;
+			}
+			
+			body {
+				padding: 10px;
+			}
+			
+			h1 {
+				font-size: 22px;
+			}
+			
+			ul {
+				font-size: 0;
+			}
+			
+			li {
+				list-style: none;
+				/*background: url(img/down.png) 0 0 no-repeat;*/
+				/*width: 162px;*/
+				width: 206px;
+				height: 279px;
+				display: inline-block;
+				border-top: 1px solid #A0A0A4;
+				position: relative;
+			}
+			
+			.box {
+				position: absolute;
+				top: 0;
+				left: 0px;
+				background: #fff;
+				/*width: 152px;*/
+				/*height: 269px;*/
+				padding: 5px;
+				margin: 0 3px;
+				position: relative;
+			}
+			
+			#showcase li:first-child .box {
+				margin-left: 0;
+			}
+			
+			.box img {
+				width: 100px;
+				height: 80px;
+				margin: 38px;
+			}
+			
+			.box input[type="text"] {
+				width: 150px;
+				height: 16px;
+				/*background: #DED6E7;*/
+				color: #0014ff;
+				font-size: 12px;
+				border: none;
+				border-bottom: 1px solid black;
+				padding: 2px;
+				vertical-align: top;
+				outline: none;
+			}
+			
+			.box input[type="button"] {
+				color: #847373;
+				background: #fff;
+				border: none;
+				width: 36px;
+				font-size: 14px;
+				font-weight: bold;
+				vertical-align: top;
+				outline: none;
+				cursor: pointer;
+				color: #0014ff;
+			}
+			
+			.box .timeoff {
+				font-size: 14px;
+				color: #A0A0A4;
+				text-align: center;
+			}
+			
+			.box p {
+				font-size: 14px;
+				margin-bottom: 0;
+			}
+			
+			.box span {
+				color: #BDADBD;
+				font-weight: bold;
+			}
+			
+			.box .price {
+				color: #BD214A;
+				font-weight: bold;
+			}
+			
+			table {
+				width: 822px;
+				background: #DED6E7;
+				text-align: center;
+				font-size: 14px;
+				color: #522121;
+				font-weight: bold;
+				margin-top: 15px;
+				border-collapse: collapse;
+			}
+			
+			td {
+				padding: 10px 0;
+				border-top: 4px solid #fff;
+				border-bottom: 4px solid #fff;
+			}
+			
+			td img {
+				width: 80px;
+				height: 51px;
+				border: 1px solid #8C4A4A;
+				margin-left: 120px;
+			}
+			
+			tbody tr td:first-child {
+				width: 180px;
+				padding: 0 10px;
+				color: #000;
+				font-weight: normal;
+			}
+			
+			tbody div {
+				width: 180px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			
+			#total {
+				width: 827px;
+				font-weight: bold;
+				font-size: 20px;
+			}
+			
+			#total .all {
+				color: #BD214A;
+			}
+			
+			.shadow {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				left: 0;
+				top: 0;
+				background-color: black;
+				opacity: 0;
+				display: none;
+			}
+			
+			.out {
+				width: 100px;
+				height: 100px;
+				border-radius: 50%;
+				border: 3px solid #DB4E66;
+				position: absolute;
+				left: 25%;
+				top: 25%;
+				color: #DB4E66;
+				font-size: 30px;
+				line-height: 100px;
+				text-align: center;
+				transform: scale(0) rotateZ(-45deg);
+			}
+		</style>
+		<script src="tween.js"></script>
+		<script src="commom.js"></script>
+		<script type="text/javascript">
+			window.onload = function() {
+				//获取元素
+				var lis = $('li');
+				var Table = document.querySelector('table');
+				for(var i = 0; i < lis.length; i++) {
+					shangpin(i);
+				}
+				//处理商品倒计时时间显示
+				function shangpin(n) {
+					var oInput2 = lis[i].querySelector('input[type="button"]');
+					//设置倒计时
+					oInput2.onclick =click;
+					function click() { //添加点击事件
+						if(oInput2.isClick) return;//处理快速点击确定按钮的时候会执行多次动画和价格计数。
+						oInput2.isClick = true;//更改点击的状态
+						clearInterval(timer1)
+						var timer1 = setInterval(function() {
+							var oInput1 = lis[n].querySelector('input[type="text"]');
+							var oInput2 = lis[n].querySelector('input[type="button"]');
+							var timeoff = lis[n].querySelector('.timeoff') //获取剩余时间
+							var futureTime = new Date(oInput1.value); //获取未来未来时间
+							var nowTime = new Date() //获取当前时间
+
+							//获取现在到未来时间的毫秒数
+							var t = (futureTime - nowTime) / 1000;
+							if(t <= 0) {
+								t = 0;
+								clearInterval(timer1)
+								getOut(n); //商品下架动画函数
+								shake(n);//处理抖动动画
+								statistics(n);//处理总计列表
+								allPrice(n);//处理总计价格
+								oInput2.isClick = false;//改变点击状态
+							}
+							var str = '剩余' + Math.floor(t / 86400) + '天' + Math.floor(t % 86400 / 3600) + '时' + Math.floor(t % 86400 % 3600 / 60) + '分' + Math.floor(t % 60) + '秒'; //换算成天，时，分，秒
+
+							timeoff.innerHTML = str; //赋值给html
+						}, 1000)
+					};
+
+				}
+				//处理商品下架的动画
+				function getOut(n) {
+					var out = lis[n].querySelector('.out'); //获取out的元素
+					var shadow = lis[n].querySelector('.shadow'); //获取遮盖元素
+
+					shadow.style.display = 'block'; //先让遮盖阴影显示
+					MTween(out, 'transform.scale.', 5, 1, 100, '', 'linear', function() { //然后让out由大变小
+						MTween(out, 'transform.rotateZ', -0, -45, 10, 'deg', 'linear') //旋转角度
+					});
+					MTween(shadow, 'opacity', 0, 0.7, 500, '', 'linear') //处理遮盖出来的动画
+				}
+				//处理倒计时抖动动画
+				function shake(n) {
+					var box = lis[n].querySelector('.box'); //获取lis[0]下的box
+					var arr = [];//声明一个空数组
+					var num = 0;//声明一个变量与数组配合
+					var pos = parseFloat(getStyle(box,'left'));//获取初始位置
+					for (var i=15;i>0;i-=2) {//循环i设为要抖动的偏移量
+						arr.push(i,-i);//for循环往数组的最后一位放值
+					}
+					arr.push(0);//恢复到抖动前的位置
+					clearInterval(timer2);
+					var timer2 = setInterval(function(){//开启定时器改变box的left值
+						box.style.left =pos+arr[num]+'px';
+						num++;
+						if(num==arr.length){
+							clearInterval(timer2);
+						}
+					},30)
+				}
+				//处理生成商品列表
+				function statistics(n){
+					var list = Table.querySelector('tbody');
+					var tags = lis[n].querySelectorAll('p')[1];
+					var price = lis[n].querySelectorAll('.price');
+					var img = lis[n].querySelector('img')
+					list.innerHTML+='<tr><td><div>'+tags.innerHTML+'<div></td>'+
+					'<td  class="unit_price">'+price[1].innerHTML+'</td>'+
+					'<td><img src="'+img.src+'"/></td></tr>'
+				}
+				//处理总价合计
+				function allPrice(n){
+					var unitPrice = Table.querySelectorAll('.unit_price');
+					var totalPrice = document.querySelector('#total>.all');
+					var j=0;
+					for(var i=0;i<unitPrice.length;i++){
+						j=i;
+					}
+					totalPrice.innerHTML =(parseFloat(totalPrice.innerHTML)+parseFloat(unitPrice[j].innerHTML)).toFixed(2);
+				}
+			}
+		</script>
+	</head>
+
+	<body>
+		<h1>限购时间</h1>
+		<ul id="showcase">
+			<li>
+				<div class="box">
+					<span class="shadow"></span>
+					<span class="out">OUT</span>
+					<input type="text" value="November 5, 2017 02:22:00">
+					<input type="button" value="确定">
+					<p class="timeoff">剩余00天00时00分00秒</p>
+					<img src="img/1.jpg" />
+					<p>浪琴(Longines)手表 名匠系列机械情侣表男表L2.628.4.78.6</p>
+					<p><span>抢购价：</span><span class="price">￥</span><span class="price">100.10</span></p>
+				</div>
+			</li>
+			<li>
+				<div class="box">
+					<span class="shadow"></span>
+					<span class="out">OUT</span>
+					<input type="text" value="November 5, 2017 02:22:00">
+					<input type="button" value="确定">
+					<p class="timeoff">剩余00天00时00分00秒</p>
+					<img src="img/2.jpg" />
+					<p>Apple iPhone X (A1865) 64GB 银色 移动4G手机</p>
+					<p><span>抢购价：</span><span class="price">￥</span><span class="price">200.20</span></p>
+				</div>
+			</li>
+			<li>
+				<div class="box">
+					<span class="shadow"></span>
+					<span class="out">OUT</span>
+					<input type="text" value="November 5, 2017 02:22:00">
+					<input type="button" value="确定">
+					<p class="timeoff">剩余00天00时00分00秒</p>
+					<img src="img/3.png" />
+					<p>I Do 真爱加冕系列 18K金铂金钻石红宝石女戒 （定制）</p>
+					<p><span>抢购价：</span><span class="price">￥</span><span class="price">300.30</span></p>
+				</div>
+			</li>
+			<li>
+				<div class="box">
+					<span class="shadow"></span>
+					<span class="out">OUT</span>
+					<input type="text" value="November 5, 2017 02:22:00">
+					<input type="button" value="确定">
+					<p class="timeoff">剩余00天00时00分00秒</p>
+					<img src="img/4.jpg" />
+					<p>JavaScript权威指南(第6版) + JavaScript高级程序设计</p>
+					<p><span>抢购价：</span><span class="price">￥</span><span class="price">400.00</span></p>
+				</div>
+			</li>
+		</ul>
+		<table>
+			<thead>
+				<tr>
+					<td width="200px">商品名称</td>
+					<td width="150px">价钱</td>
+					<td width="298px"></td>
+				</tr>
+			</thead>
+			<tbody>
+				<!--<tr>-->
+					<!--<td>
+						<div>浪琴(Longines)手表 名匠系列机械情侣表男表L2.628.4.78.6<div>
+					</td>
+					<td>100.00</td>
+					<td><img src="img/1.jpg" /></td>-->
+				<!--</tr>-->
+				<!--<tr>-->
+					<!--<td>
+						<div>Apple iPhone X (A1865) 64GB 银色 移动联通电信4G手机<div>
+					</td>
+					<td>200.00</td>
+					<td><img src="img/2.jpg" /></td>-->
+				<!--</tr>-->
+				<!--<tr>-->
+					<!--<td>
+						<div>I Do 真爱加冕系列 18K金铂金钻石红宝石女戒 公主钻戒求婚结婚戒指婚戒（定制） (定制)PT950/1克拉/SI/I色/9-15号<div>
+					</td>
+					<td>300.00</td>
+					<td><img src="img/3.png" /></td>-->
+				<!--</tr>-->
+				<!--<tr>-->
+					<!--<td>
+						<div>JavaScript权威指南(原书第6版)<div>
+					</td>
+					<td>400.00</td>
+					<td><img src="img/4.jpg" /></td>-->
+				<!--</tr>-->
+			</tbody>
+		</table>
+		<p id="total">
+			总价：<span class="all">0</span>元
+		</p>
+	</body>
+
+</html>

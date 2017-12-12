@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			section {
+				width: 500px;
+				height: 200px;
+				margin: 100px auto;
+				border-radius: 10px;
+				background: pink;
+				overflow: hidden;
+			}
+			
+			.up {
+				height: 70%;
+				background-color: bisque;
+				padding-left: 160px;
+				box-sizing: border-box;
+				line-height: 140px;
+			}
+			
+			span {
+				cursor: pointer;
+				font-size: 40px;
+			}
+			
+			strong {
+				font-size: 20px;
+				vertical-align: top;
+				color: royalblue;
+			}
+			
+			.down {
+				height: 30%;
+				background-color: plum;
+				text-align: center;
+				line-height: 60px;
+			}
+		</style>
+		<script type="text/javascript">
+			window.onload = function() {
+				var span = document.querySelectorAll('span');
+				var strong = document.querySelector('strong');
+
+				arrText = ['青铜', '白银', '黄金', '铂金', '钻石']
+
+				for(i = 0; i < span.length; i++) {
+					span[i].index = i;
+					siteIndex = -1;
+					span[i].onmouseover = function() {
+						//鼠标移开的时候让span颜色恢复
+
+						//先给每个span都加上鼠标移入效果
+						for(i = 0; i < span.length; i++) {
+							//控制鼠标移入到第（this.index）的span时，小于this.index的span颜色改变，否则不改变颜色。
+							//if套if。（较难理解）
+							if(i <= this.index) {
+								//控制鼠标移入前两个span颜色为pink，移入第三个时颜色变成red。
+								if(this.index <= 1) {
+									span[i].style.color = 'pink';
+								} else {
+									span[i].style.color = 'red';
+								}
+							} else {
+								span[i].style.color = '';
+							}
+						}
+						strong.style.display = 'inline';
+						strong.innerHTML = arrText[this.index];
+					}
+
+					span[i].onmouseout = function() {
+						for(i = 0; i < span.length; i++) {
+							span[i].style.color = '';
+						}
+						strong.style.display = 'none';
+
+						if(siteIndex > -1) {
+							for(i = 0; i < span.length; i++) {
+								//控制鼠标移入到第（this.index）的span时，小于this.index的span颜色改变，否则不改变颜色。
+								//if套if。（较难理解）
+								if(i <= siteIndex) {
+									//控制鼠标移入前两个span颜色为pink，移入第三个时颜色变成red。
+									if(siteIndex <= 1) {
+										span[i].style.color = 'pink';
+									} else {
+										span[i].style.color = 'red';
+									}
+								} else {
+									span[i].style.color = '';
+								}
+							}
+							strong.style.display = 'inline';
+							strong.innerHTML = arrText[siteIndex];
+						}
+
+					}
+
+					span[i].onclick = function() {
+						//记录被点击的位置
+						siteIndex = this.index;
+					}
+				}
+			}
+		</script>
+
+	</head>
+
+	<body>
+		<section>
+			<div class="up">
+				<span style="">♥</span>
+				<span style="">♥</span>
+				<span style="">♥</span>
+				<span style="">♥</span>
+				<span style="">♥</span>
+				<strong style="display: none;">钻石</strong>
+			</div>
+			<div class="down">小提示：点击星星就能评分</div>
+		</section>
+	</body>
+
+</html>

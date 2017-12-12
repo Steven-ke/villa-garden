@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			body{
+				background-color: skyblue;
+			}
+			div {
+				width: 200px;
+				height: 200px;
+				border-radius: 50%;
+				background-color: yellow;
+				margin: 200px auto;
+				box-shadow: 0px 0px 100px 100px mistyrose;
+				opacity: 1;
+			}
+		</style>
+		<script src="tween.js"></script>
+		<script src="commom.js"></script>
+		<script type="text/javascript">
+			window.onload = function() {
+				var div = $('div')[0];
+				var op = getStyle(div, 'opacity')
+				function digui(){
+//					if(op== 1){
+						MTween(div, 'opacity', 0, 3000, '', 'linear', function() {
+							MTween(div, 'opacity', 1, 3000, '', 'linear', function() {
+								digui();
+							})
+						});
+//					}
+//					if(getStyle(div, 'opacity') == 0){
+//						MTween(div, 'opacity', 1, 1000, '', 'linear', function() {
+//							digui();
+//						});
+//					}
+				}
+				
+					digui();
+			}
+		</script>
+	</head>
+
+	<body>
+		<div></div>
+	</body>
+
+</html>

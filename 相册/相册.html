@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	    body,html {
+	      margin: 0;
+	      height: 100%;
+	      overflow: hidden;
+	    }
+		/*body{
+			margin:0;
+			background: #37434f;
+		}*/
+		div{
+			border:5px solid white;
+            box-shadow: 5px 5px 5px gray;
+            display: inline-block;
+			position: absolute;
+			left: 600px;
+			top:200px;
+			font-size: 0;
+			opacity: 0.5;
+			overflow: hidden;
+		}
+	    canvas {
+	      background-color: #000;
+	    }
+	</style>
+</head>
+<body>
+	<div><img src="pic/m1.jpg" style="width:200px;"></div>
+	<div><img src="pic/m2.jpg" style="width:300px;"></div>
+	<div><img src="pic/m3.jpg" style="width:300px;"></div>
+	<div><img src="pic/m4.jpg" style="width:230px;"></div>
+	<div><img src="pic/m5.jpg" style="width:350px;"></div>
+	<div><img src="pic/m6.jpg" style="width:350px;"></div>
+	<div><img src="pic/m7.jpg" style="width:240px;"></div>
+	<div><img src="pic/m8.jpg" style="width:320px;"></div>
+	<div><img src="pic/m9.jpg" style="width:260px;"></div>
+	<div><img src="pic/m10.jpg" style="width:350px;"></div>
+	<canvas id="canvas"></canvas>
+	<!--<article></article>-->
+</body>
+	<script src="tween.js"></script>
+	<script src="sartre.js"></script>
+	<script>
+	var size=[200,300,300,230,350,350,240,320,260,350];  //图片的width
+	var img=$('img');
+	var div=$('div');
+
+	// 随机生成10~20的层级
+	var arrZ=[];
+	for(var i=0;i<div.length;i++){
+		var num=Math.ceil(Math.random()*20+10)||1;
+		var bool=false;
+		if(arrZ.length==0){
+			arrZ.push(num);
+		}else{
+			for(var t=0;t<arrZ.length;t++){
+				if(arrZ[t]==num){
+					bool=true;
+					break;
+				}
+			}
+
+			if(bool){
+				i--;
+			}else{
+				arrZ.push(num);
+			}
+		}
+	}
+	// 给图片设置层级,和left、top动画效果
+	for(var i=0;i<div.length;i++){
+		div[i].style.width=parseFloat(getStyle(img[i],'width'))+'px';
+//		div[i].style.height=parseFloat(getStyle(div[i],'height'))+'px';
+		div[i].style.zIndex=arrZ[i];
+
+		MTweenPlus({
+			obj:div[i],
+			attrs:{
+				'left':Math.floor(Math.random()*900)+'px',
+				'top':Math.floor(Math.random()*400)+'px'
+			},
+			duration:2000,
+			way:'backOut'
+		});
+	}
+	//添加图片双击效果
+	for(var i=0;i<div.length;i++){
+		div[i].state = true;
+//		div[i].onclick = function()
+		div[i].addEventListener('dblclick',function(){
+			if(this.state){
+				for(var i=0;i<div.length;i++){
+				 div[i].style.transform='scale(1)'
+				 div[i].style.display = 'none'
+				}
+				this.style.display = 'block';
+				this.style.left = window.innerWidth/2-this.offsetWidth/2+'px';
+				this.style.top = 150+'px';
+				this.style.transform='scale(2)';
+				this.style.opacity = '1';
+				this.state = false;
+			}else{
+				for(var i=0;i<div.length;i++){
+				 div[i].style.display = 'block';
+				 MTweenPlus({
+					obj:div[i],
+					attrs:{
+						'left':Math.floor(Math.random()*900)+'px',
+						'top':Math.floor(Math.random()*400)+'px'
+					},
+					duration:2000,
+					way:'backOut'
+				});
+				}
+				this.style.opacity = '0.5';
+				this.style.transform='scale(1)'
+				this.state = true;
+			}
+		})
+	}
+	//鼠标移入事件
+	for(var i=0;i<div.length;i++){
+		div[i].onmouseover = function(){
+			for(var i=0;i<div.length;i++){
+				div[i].style.zIndex =div[i].style.zIndex-10;
+			}
+			this.style.opacity = '1';
+			this.style.zIndex = this.style.zIndex+10;
+		}
+		div[i].onmouseout = function(){
+			for(var i=0;i<div.length;i++){
+				div[i].style.zIndex =div[i].style.zIndex+10;
+			}
+			this.style.zIndex = this.style.zIndex-10;
+			if(!this.state) return;
+			this.style.opacity = '0.5';
+		}
+	}
+	
+	// 添加图片的鼠标按下事件
+	for(var i=0;i<div.length;i++){
+		div[i].index=i;
+		div[i].onmousedown=function(event){
+			event.preventDefault();
+			var x1=event.clientX;
+			var y1=event.clientY;
+			var l=this.offsetLeft;
+			var t=this.offsetTop;
+			var x,y;
+			var index=this.index;
+			MTweenPlus({
+				obj:img[this.index],
+				attrs:{
+					'transform.scale':1
+				},
+				begin:{
+					'transform.scale':1.5
+				},
+				duration:800
+			});
+
+
+			// console.log('第'+this.index+'张图片按下');
+
+			// 鼠标移动
+			document.onmousemove=function(event){
+				event.preventDefault();
+				var x2=event.clientX;
+				var y2=event.clientY;
+				x=x2-x1;
+				y=y2-y1;
+				div[index].style.left=l+x+'px';
+				div[index].style.top=t+y+'px';
+				// console.log('第'+index+'张图片移动');
+			};
+
+			// 鼠标抬起，取消鼠标移动事件
+			document.onmouseup=function(){
+				document.onmousemove=null;
+				// console.log('第'+index+'张图片抬起');
+			};
+		};
+	}
+
+	// 取消鼠标在document上移动时的默认事件
+	document.onmousemove=function(event){
+		event.preventDefault();
+	};
+	document.onmousedown = function(ev){
+		var ev = ev||event;
+		ev.preventDefault();
+	}
+</script>
+	<script src="utils.js"></script>
+	<script src="Particle.js"></script>
+	<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    let W, H, particles = [], spring = 0.0001;
+    
+    window.onresize = function (){
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      createParticles(W * H / 13000);
+    };
+    
+    window.onresize();
+    
+    function createParticles(num){
+      if(num !== particles.length){
+        particles = [];
+      }
+      for(let i=0; i<num; i++){
+        const size = rp([3, 10], true);
+        particles.push(new Particle({
+          x: rp([0, W], true),
+          y: rp([0, H], true),
+          fillStyle: '#fff',
+          vx: rp([-2, 2]),
+          vy: rp([-2, 2]),
+          r: size,
+          m: size
+        }));
+      }
+    }
+    
+    function startMove(p, i){
+      p.x += p.vx;
+      p.y += p.vy;
+      
+      for(let j=i+1,len=particles.length; j<len; j++){
+        const t = particles[j];
+        checkSpring(p, t);
+        checkParticleHit(p, t);
+      }
+      
+      checkLoop(p, W, H);
+    }
+    
+    function checkSpring(c, t){
+      let dx = t.x - c.x;
+      let dy = t.y - c.y;
+      let dist = Math.sqrt(dx**2 + dy**2);
+      let minDist = W/10; // ?
+      if(dist < minDist){
+        drawLine(c, t, dist, minDist);
+        let ax = dx * spring;
+        let ay = dy * spring;
+        c.vx += ax / c.m;
+        c.vy += ay / c.m;
+        t.vx -= ax / t.m;
+        t.vy -= ay / t.m;
+      }
+    }
+    
+    function drawLine(c, t, dist, minDist){
+      ctx.save();
+      ctx.lineWidth = 2 * Math.max(0, 1 - dist / minDist);
+      ctx.globalAlpha = Math.max(0, 1 - dist / minDist);
+      ctx.strokeStyle = '#fff';
+      ctx.beginPath();
+      ctx.lineTo(c.x, c.y);
+      ctx.lineTo(t.x, t.y);
+      ctx.stroke();
+      ctx.restore();
+    }
+    
+    function drawParticles(p){
+      p.render(ctx);
+    }
+    
+    (function drawFrame(){
+      window.requestAnimationFrame(drawFrame);
+      ctx.clearRect(0, 0, W, H);
+      
+      particles.forEach(startMove);
+      particles.forEach(drawParticles);
+    })();
+  </script>
+	<script src="sartre.js"></script>
+</script>
+</html>

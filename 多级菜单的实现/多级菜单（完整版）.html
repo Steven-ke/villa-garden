@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			body {
+				background: skyblue;
+			}
+			
+			#box {
+				width: 700px;
+				margin: 0 auto;
+			}
+		</style>
+		<script type="text/javascript">
+			window.onload = function() {
+				//设计一个数组
+				var content = [
+					{
+						title: '第一级菜单',
+						child: [
+							{
+								title: '第二级菜单',
+								child: [
+									{
+										title: '第三级菜单',
+										child: []
+									},
+									{
+										title: '第三级菜单',
+										child: []
+									},{
+										title: '第三级菜单',
+										child: []
+									}
+								]
+							},
+							{
+								title: '第二级菜单',
+								child: [
+									{
+										title: '第三级菜单',
+										child: []
+									},
+									{
+										title: '第三级菜单',
+										child: []
+									},{
+										title: '第三级菜单',
+										child: []
+									}
+								]
+							},
+							{
+								title: '第二级菜单',
+								child: [
+									{
+										title: '第三级菜单',
+										child: []
+									},
+									{
+										title: '第三级菜单',
+										child: []
+									},
+									{
+										title: '第三级菜单',
+										child: []
+									}
+								]
+							}
+						]
+					},
+					{
+						title: '第一级菜单',
+						child: [
+							{
+								title: '第二级菜单',
+								
+							},
+							{
+								title: '第二级菜单',
+								child: [
+									{
+										title: '第三级菜单',
+										child: []
+									},
+									{
+										title: '第三级菜单',
+										child: []
+									},{
+										title: '第三级菜单',
+										child: []
+									}
+								]
+							},
+							{
+								title: '第二级菜单',
+								child: [
+									{
+										title: '第三级菜单',
+										child: []
+									},
+									{
+										title: '第三级菜单',
+										child: []
+									},
+									{
+										title: '第三级菜单',
+										child: []
+									}
+								]
+							}
+						]
+					},
+					{title: '第一级菜单',child: []},
+				];
+				//通过json生成页面
+				var box = document.querySelector('#box');
+				
+				box.innerHTML = produceHtml(content)
+				//通过递归和判断实现子级菜单
+				function  produceHtml(json) {//封装一个函数
+					var lis = '';//声明一个空的变量
+					for(var i =0;i<json.length;i++){//循环遍历数组包括数组里的child
+						if(json[i].child&&json[i].child.length>0){//判断数组里是否有child，有则递归生成子元素
+							lis+='<li>'+
+								'<h3><span>+</span>'+json[i].title+'</h3>'+
+									'<ul class="list"; style="display:none;">'+
+										produceHtml(json[i].child)+
+									'</ul>'+
+								'</li>'
+							}else{//否则数组里没有child就生成h3
+								lis+='<li><h3><span>~</span>'+json[i].title+'</h3></li>'
+							}
+						
+					}
+					return lis;//返回这个lis的值。（<li>...</li>）
+				}
+				
+				//点击事件开启关闭元素
+				var h3 = document.querySelectorAll('h3');//获取所有H3元素用来添加点击事件
+				for(var i=0;i<h3.length;i++){//循环遍历所有h3
+						h3[i].state = true;//给每一个h3添加一个打开关闭状态，默认关闭状态为true
+						h3[i].onclick = function(){
+							if(this.state){//如果h3是关闭状态点击的时候就打开它
+								//此处处理点击打开当前ul的时候让其他所有ul都关闭（相当于大清除后再打开当前ul）
+								 var parent = this.parentNode.parentNode;//ul声明一个变量当前的h3的父级的父级，也就是ul
+								 var h3s = parent.querySelectorAll('h3')//声明一个变量为当前这个元素的父级下面的所有h3
+								 for(var i=0;i<h3s.length;i++){//此处的知识点是要找到共同的父级然后遍历
+								 	var h3s_ul = h3s[i].nextElementSibling;//获取所有的h3的兄弟元素，也就是h3下面的ul
+								 	var h3s_span = h3s[i].children[0];//获取h3里面的span改变‘+’的样式
+								 	if(h3s_ul){//如果h3下面的ul存在
+								 		h3s_ul.style.display = 'none'//那么就让它关闭
+								 		h3s_span.innerHTML = '+';//改变span里的‘+’状态
+								 		h3s[i].state = true;//改变开关状态
+								 	}
+								 }
+								 //此处处理大清除之后再打开这个ul
+								if (this.nextElementSibling) {//判断当前这个元素下面的ul是否存在
+									this.nextElementSibling.style.display = 'block';//存在的话打开它
+									this.children[0].innerHTML = '-';//改变h3前面的加号
+									this.state =false;//改变打开关闭状态
+								}
+							}else{//否则关闭ul
+								this.nextElementSibling.style.display = 'none';
+								this.children[0].innerHTML = '+';
+								this.state = true;
+								//次出处理关闭当前ul的时候同时关闭下面所有的ul
+								var ul =this.parentNode.querySelectorAll('ul');
+								console.log(ul)
+								//此处处理判断该ul是开启还是关闭状态，并改变该状态
+									for (var i = 0; i < ul.length; i++) {
+										if(ul[i].style.display=='block'){
+											ul[i].style.display='none';
+										}
+										ul[i].previousElementSibling.state=true;
+									}
+							}
+							
+						}
+				}
+				
+				
+				
+				
+				
+			}
+		</script>
+	</head>
+
+	<body>
+		<ul id="box">
+			<!--<li>
+				<h3>标题1</h3>
+				<ul>
+					<li>
+						<h3>标题2</h3>
+						<ul>
+							<h3>标题3</h3>
+						</ul>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h3>标题1</h3>
+				<ul>
+					<li>
+						<h3>标题2</h3>
+						<ul>
+							<h3>标题3</h3>
+						</ul>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h3>标题1</h3>
+				<ul>
+					<li>
+						<h3>标题2</h3>
+						<ul>
+							<h3>标题3</h3>
+						</ul>
+					</li>
+				</ul>
+			</li>-->
+		</ul>
+	</body>
+
+</html>

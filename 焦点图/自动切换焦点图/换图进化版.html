@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			ul,
+			li,
+			p,
+			h3 {
+				padding: 0;
+				margin: 0;
+				list-style: none;
+			}
+			
+			img {
+				border: none;
+				vertical-align: top;
+			}
+			
+			#bg_box {
+				width: 1000px;
+				height: 590px;
+				margin: 50px auto;
+				position: relative;
+				background: url(img/bg1.jpg) no-repeat;
+			}
+			
+			.pic {
+				width: 440px;
+				height: 274px;
+				position: absolute;
+				top: 50px;
+				left: 220px;
+				overflow: hidden;
+			}
+			
+			.li_box {
+				width: 1760px;
+				height: 274px;
+				position: absolute;
+				left: 0;
+			}
+			
+			.tags {
+				width: 440px;
+				height: 80px;
+				position: absolute;
+				bottom: -80px;
+				background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
+				color: white;
+				padding-left: 20px;
+				padding-top: 15px;
+				box-sizing: border-box;
+			}
+			
+			.tags:nth-of-type(1) {
+				/*bottom: 0;*/
+			}
+			
+			.img {
+				float: left;
+				width: 440px;
+				height: 274px;
+			}
+			
+			h3 {
+				font: bold 20px/30px "微软雅黑";
+			}
+			
+			p {
+				font: 16px/30px "微软雅黑";
+			}
+		</style>
+		<script src="tween.js"></script>
+		<script src="commom.js"></script>
+		<script type="text/javascript">
+			window.onload = function() {
+				//获取元素
+				var liBbox = $('ul')[0];
+				var li = $('li');
+				var tags = $('.tags')
+				var num = 0; //设置初始位置
+
+				Change()
+
+				function Change() {
+					var M = tags[num];
+					MTween(M, 'bottom', 0, 500, 'px', 'linear', function() { //先让描述内容出现
+						num++
+						if(num > li.length - 1) { //边界设置。
+							return;
+						}
+						setTimeout(function() {
+							MTween(M, 'bottom', -80, 500, 'px', 'linear', function() { //让描述内容不显示
+								MTween(liBbox, 'left', -num * 440, 800, 'px', 'linear', function() {
+									Change();
+								}); //切换图片
+							});
+						}, 1000)
+					});
+				}
+			}
+		</script>
+	</head>
+
+	<body>
+		<section id="bg_box">
+			<div class="pic">
+				<ul class="li_box">
+					<li>
+						<img class="img" src="img/a5.gif">
+					</li>
+					<li>
+						<img class="img" src="img/a6.gif">
+					</li>
+					<li>
+						<img class="img" src="img/a7.gif">
+					</li>
+					<li>
+						<img class="img" src="img/a8.gif">
+					</li>
+				</ul>
+				<div class="tags">
+					<h3 class="title">下雨了~~~</h3>
+					<p class="tag">这是一个适合在家睡觉的日子!!</p>
+				</div>
+				<div class="tags">
+					<h3 class="title">包饺子~~~</h3>
+					<p class="tag">一只会居家过日子的小狐狸！！</p>
+				</div>
+				<div class="tags">
+					<h3 class="title">生气了~~~</h3>
+					<p class="tag">吃掉好吃的就不生气了！！</p>
+				</div>
+				<div class="tags">
+					<h3 class="title">出发了~~~</h3>
+					<p class="tag">来一段说走就走的旅行!!</p>
+				</div>
+			</div>
+		</section>
+	</body>
+
+</html>

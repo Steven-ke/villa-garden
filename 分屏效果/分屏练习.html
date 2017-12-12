@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			body {
+				margin: 0;
+				background: pink;
+				position: relative;
+			}
+			
+			a {
+				width: 50px;
+				height: 50px;
+				text-align: center;
+				text-decoration: none;
+				font-size: 80px;
+				position: absolute;
+				bottom: 0;
+				left: 50%;
+				color: yellow;
+			}
+			
+			nav {
+				height: 50px;
+				width: 100%;
+				background-color: #FFE596;
+				display: flex;
+				justify-content: center;
+				position: fixed;
+				z-index: 5;
+			}
+			
+			span {
+				width: 120px;
+				padding: 10px;
+				color: blue;
+				font: bold 18px/20px "微软雅黑";
+				cursor: pointer;
+			}
+			
+			div {
+				position: relative;
+			}
+			
+			img {
+				height: 650px;
+				width: 100%;
+			}
+		</style>
+		<script src="tween.js"></script>
+		<script src="commom.js"></script>
+		<script type="text/javascript">
+			window.onload = function() {
+				//获取元素
+				var box = $('section')[0];
+				var spans = $('span');
+				var title = $('a');
+				console.log(title.length)
+				var div = $('div');
+				var timer = null;
+				//					var scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+				//					console.log(scrollTop)
+				//处理小尖尖动画事件
+
+				clearInterval(timer)
+				timer = setInterval(function() {
+					for(var i = 0; i < title.length; i++) {
+						MTween({
+							obj: title[i],
+							attrs: {
+								bottom: 20 + 'px'
+							},
+							way: 'backBoth',
+							duration: 600,
+							callBack: (function(i) {
+								return function() {
+									MTween({
+										obj: title[i],
+										attrs: {
+											bottom: 0 + 'px'
+										},
+										way: 'backBoth',
+										duration: 600,
+									});
+								}
+
+							})(i)
+						});
+
+					}
+				}, 1200)
+				//处理点击导航事件
+				spans[0].onclick = title[1].onclick = function() {
+					move(0) //第一张图的位置为0初始位置
+				}
+				spans[1].onclick = title[0].onclick = function() {
+					var secImgSite = div[1].offsetTop; //获取第二张图到定位父级的距离
+					//						console.log(secImgSite)
+					move(secImgSite)
+				}
+				spans[2].onclick = function() {
+					var last = parseInt(getStyle(box, 'height')); //获取父级box的宽度，这个值足以让滚动条带最低下
+					console.log(last)
+					move(last)
+				}
+				//处理动画运动
+				function move(num) {
+					MTween({
+						obj: document.documentElement,
+						begins: {
+							scrollTop: document.documentElement.scrollTop
+						},
+						attrs: {
+							scrollTop: num
+						},
+						duration: 1000
+					});
+				}
+
+			}
+		</script>
+	</head>
+
+	<body>
+		<section id="box">
+			<nav class="nav">
+				<span>可怜的阿狸</span>
+				<span>童年的龙珠</span>
+				<span>卖萌的小黄人</span>
+			</nav>
+			<div>
+				<img class="img2" src="img/1.jpg" alt="" />
+				<a style="transform: rotateZ(90deg);" class="title1" href="javascrpt:;">&raquo;</a>
+			</div>
+			<div>
+				<img class="img2" src="img/3.jpg" alt="" />
+			</div>
+			<div>
+				<img class="img2" src="img/4.jpg" alt="" />
+				<a style="transform: rotateZ(-90deg);" class="title1" href="javascrpt:;">&raquo;</a>
+			</div>
+		</section>
+	</body>
+
+</html>

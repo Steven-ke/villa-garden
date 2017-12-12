@@ -1,0 +1,165 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>你的鼠标有多快？</title>
+		<style>
+			body {
+				background: #A656D9;
+				font-family: 微软雅黑;
+				font-size: 16px;
+			}
+			
+			#box {
+				width: 800px;
+				height: 450px;
+				/*border: 1px solid #066;*/
+				background: #FFF;
+				margin: 20px auto 0;
+				position: relative;
+				top: 0;
+				left: 0;
+			}
+			
+			#fraction {
+				width: 100px;
+				position: relative;
+				top: 0px;
+				left: -120px;
+				padding: 10px;
+			}
+			
+			#fraction p {
+				margin: 0;
+				margin-bottom: 10px;
+				font-family: 微软雅黑;
+				font-size: 16px;
+				line-height: 100px;
+				width: 100px;
+				height: 100px;
+				background-color: yellow;
+				border-radius: 50%;
+				text-align: center;
+			}
+			
+			#alert {
+				text-align: center;
+			}
+			
+			#qq {
+				position: absolute;
+				left: 0;
+			}
+		</style>
+		<script src="tween.js"></script>
+		<script src="commom.js"></script>
+		<script type="text/javascript">
+			window.onload = function() {
+				//获取元素
+				var box = $('#box')
+				var btn = $('input')[0];
+				var img = $('img')[0];
+				var qq = $('#qq');
+				var score =$('span');
+				//声明变量
+				var num=0;
+				var timer = null;
+				var arr1 = [];
+				btn.state =false;
+				btn.onclick = function(){
+					if(this.state)return;
+					this.state=true;
+					score[0].innerHTML=0;
+					score[1].innerHTML=0;
+					num=0;
+					move(); //开始按钮
+				}
+				function move() { //一个按钮开始晕运动、
+					qq.style.display='block';
+					arr1[0] = (Math.round(Math.random() * 776));//让下落的图标left每次重新执行函数时随即一个位置
+					qq.style.left = arr1[0] + 'px';//把随机的位置赋值给qq.left；
+					img.src = 'img/' + (Math.round(Math.random() * 10 + 1)) + '.png';//每次随机改变一次下落的图标img.src
+					clearInterval(timer)
+					timer = setInterval(function() {//开启定时器，这里不可用mtween，因为无法停止下来。
+						var speed = 10;//下落的速度
+						var Top = parseFloat(getStyle(qq, 'top'));//获取下落图标当前的位置
+						qq.style.top = Top + speed + 'px';//处理图标下落，改变top值
+						if(Top >= 426) {//边界处理，当下落图标到最下方时回到初始位置重新开始；
+							shake(box);//到边界时让box抖动一下
+							arr1[0] = (Math.round(Math.random() * 776));//给数组添加一个1-776的随机数，用来改变left的值，该表下落图标的left位置
+							img.src = 'img/' + (Math.round(Math.random() * 10 + 1)) + '.png';//每次到边界后回到初始位置时随机改变图标样式
+							qq.style.left = arr1[0] + 'px';//改变下落图标重新出现的位置
+							qq.style.top = '0px';//让下落图标回到初始位置
+							score[1].innerHTML++;//每次下落到边界时失分+1
+							if(score[1].innerHTML>=10){//当失分到10分时游戏结束
+								qq.style.display='none'
+								clearInterval(timer);
+								btn.state = false;
+								alert('GAME OVER');
+								return;
+							}
+						}
+					}, 200+num)
+				}
+				
+				//鼠标点击事件
+				var onoff = false;
+				qq.onclick = function() {	
+					if(onoff)return;
+					onoff=true;
+					score[0].innerHTML++;//每次点击下落的图标得1分。
+					img.src = 'img/qq.png';//击中时改变图标表情
+					shake(qq);//执行抖动
+					clearInterval(timer)//关闭定时器，
+					setTimeout(function(){//停留一秒后再开始下一组
+						qq.style.top = '0px';//回到初始位置
+						num=num-10;//每次击中定时器速度加快
+						move()//再次执行下落动画
+						onoff=false;
+					},1000)//停留1秒
+				}
+				//处理抖动动画
+				function shake(obj) {
+					var arr = [];//声明一个空数组
+					var num = 0;//声明一个变量与数组配合
+					var pos = parseFloat(getStyle(obj,'left'));//获取初始位置
+					for (var i=15;i>0;i-=2) {//循环i设为要抖动的偏移量
+						arr.push(i,-i);//for循环往数组的最后一位放值
+					}
+					arr.push(0);//恢复到抖动前的位置
+					clearInterval(timer2);
+					var timer2 = setInterval(function(){//开启定时器改变box的left值
+						obj.style.left =pos+arr[num]+'px';
+						num++;
+						if(num==arr.length){
+							clearInterval(timer2);
+						}
+					},30)
+				}
+
+			}
+		</script>
+	</head>
+
+	<body>
+
+		<div id="alert">
+			<h2>你的鼠标有多快？</h2>
+			<p>游戏说明：点击“开始游戏”，随机掉下QQ表情，点中它，千万别让它掉下去！！</p>
+			<input type="button" value="开始游戏" />
+		</div>
+
+		<div id="box">
+			<div id="fraction">
+				<p>得分：<span>0</span> 分</p>
+				<p>失分：<span>0</span> 分</p>
+			</div>
+			<div style="left:0;top: 0px;display: none;" id="qq">
+				<img src="img/1.png" />
+			</div>
+		</div>
+
+	</body>
+
+</html>

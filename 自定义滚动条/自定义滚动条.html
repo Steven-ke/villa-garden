@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<style>
+			body,
+			html {
+				margin: 0;
+				width: 100%;
+				height: 100%;
+			}
+			
+			ul,
+			li {
+				margin: 0;
+				padding: 0;
+				list-style: none;
+			}
+			
+			.scrollBox {
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+				padding-right: 15px;
+				box-sizing: border-box;
+			}
+			
+			.cBox {
+				width: 100%;
+				/*float: left;*/
+			}
+			
+			.sBox {
+				width: 15px;
+				height: 100%;
+				/*float: right;*/
+				position: absolute;
+				top: 0;
+				right: 0;
+				background-image: linear-gradient(rgba(188,57,75,0.8) 0%,rgba(38,70,173,0.5) 100%);
+				box-shadow: 0 0 15px 3px rgba(0,0,0,0.5) inset;
+			}
+			
+			li {
+				width: 100%;
+			}
+			
+			img {
+				display: block;
+				width: 100%;
+			}
+			
+			.tool {
+				width: 100%;
+				border-radius:7px;
+				position: relative;
+				left: 0px;
+				top: 0px;
+				text-align: center;
+				/*background-color: skyblue;*/
+				background-image: linear-gradient(skyblue 0%,pink 100%);
+				box-shadow: 0 0 20px 2px #FFFF99 inset;				
+				cursor: pointer;
+			}
+		</style>
+		<script type="text/javascript">
+			window.onload = function() {
+				//获取触发滚动事件的元素
+				var scrollBox = document.querySelector('.scrollBox');
+				//创建滚动结构：
+				//--------------
+
+				//获取和子元素
+				var cBox = scrollBox.querySelector('.cBox');
+				var sBox = scrollBox.querySelector('.sBox');
+				var tool = scrollBox.querySelector('.tool');
+				initWheel();
+				//滚动条初始化
+				function initWheel() {
+					//计算滚动条高度
+					var H1 = cBox.offsetHeight;
+					var H2 = scrollBox.clientHeight;
+					var h1 = sBox.offsetHeight;
+					//求出h2的高度
+					var h2 = H2 / H1 * h1;
+					//					console.log(h2)
+					tool.style.height = h2 + 'px';
+					tool.style.lineHeight = h2 + 'px';
+				}
+					var site = tool.offsetTop;
+					var speed = 10;
+					wheel({
+						obj: scrollBox,
+						up: function() {
+							site -= speed;
+							//边界处理
+							if(site <= 0) {
+								site = 0;
+							}
+							tool.style.top = site + 'px';
+							cBox.style.marginTop = -(cBox.offsetHeight * (site / sBox.clientHeight)) + 'px';
+						},
+						down: function() {
+							site += speed;
+							//边界处理
+							if(site >= sBox.clientHeight - tool.offsetHeight) {
+								site = sBox.clientHeight - tool.offsetHeight;
+							}
+							tool.style.top = site + 'px';
+							cBox.style.marginTop = -(cBox.offsetHeight * (site / sBox.clientHeight)) + 'px';
+						}
+					});
+					
+					//拖动滚动条
+					tool.onmousedown = function(ev){
+						var ev=ev||event;
+						ev.preventDefault();
+						var x1 = ev.clientX;
+						var y1 =ev.clientY;
+						document.onmousemove = function(ev){
+							var ev=ev||event;
+							ev.preventDefault();
+							var x2 = ev.clientX;
+							var y2 =ev.clientY;
+							
+							var x = Math.abs(x2-x1);
+							var y = y2-y1;
+							
+							//边界处理
+							var m =site+y;
+							if(m<=0){
+								m=0;
+							};
+							if(m>=sBox.clientHeight-tool.offsetHeight){
+								m=sBox.clientHeight-tool.offsetHeight;
+							};
+							tool.style.top=m+'px';
+							cBox.style.marginTop = -cBox.offsetHeight*(m/sBox.clientHeight)+'px';
+							if(x>200){//x超过滚动条200时取消事件
+								site = tool.offseetTop;//这里记录变化后的位置
+								document.onmousemove = null;
+							}
+						}
+						document.onmouseup = function(){
+							site = tool.offsetTop;//记录变化后的位置
+							document.onmousemove = null;
+						}
+					}
+					
+
+					/*
+					 * 
+					 * //滚轮事件方法：
+			         * 功能：绑定滚轮事件
+			         * 参数：
+			         * option {
+			         *
+			         *   obj： 触发事件的元素
+			         *   up:  滚轮向上滚动要执行的函数
+			         *   down: 滚轮向下滚动要执行的函数
+			         *
+			         * }
+			         * 
+			         * */
+
+					function wheel(option) {
+						//自定义错误提示
+						if(!option) {
+							console.log('错误码10086:参数不正确');
+							return false;
+						}
+						var opt = {
+							obj: option.obj || documen,
+							up: option.up || null,
+							down: option.down || null,
+						};
+						opt.obj.onmousewheel = function(ev) {
+							var ev = ev || event;
+							if(ev.wheelDelta < 0) {
+								console.log('向下')
+								opt.down && opt.down();
+							}
+							if(ev.wheelDelta > 0) {
+								console.log('向上')
+								opt.up && opt.up();
+							}
+						}
+						opt.obj.addEventListener('DOMMouseScroll', function(ev) {
+
+							var ev = ev || event;
+
+							//							                console.log(ev.detail);
+
+							if(ev.detail > 0) {
+								//                    console.log('向下');
+								opt.down && opt.down();
+							}
+							if(ev.detail < 0) {
+								//								                    console.log('向上');
+								opt.up && opt.up();
+							}
+						});
+					}
+			}
+		</script>
+	</head>
+
+	<body>
+		<section class="scrollBox">
+			<div class="cBox">
+				<ul>
+					<li>
+						<img src="img/1.jpg" alt="" />
+					</li>
+					<li>
+						<img src="img/2.jpg" alt="" />
+					</li>
+					<li>
+						<img src="img/3.jpg" alt="" />
+					</li>
+					<li>
+						<img src="img/4.jpg" alt="" />
+					</li>
+					<li>
+						<img src="img/5.jpg" alt="" />
+					</li>
+					<li>
+						<img src="img/6.jpg" alt="" />
+					</li>
+					<li>
+						<img src="img/7.jpg" alt="" />
+					</li>
+					<li>
+						<img src="img/8.jpg" alt="" />
+					</li>
+					<li>
+						<img src="img/9.jpg" alt="" />
+					</li>
+				</ul>
+			</div>
+			<div class="sBox">
+				<span class="tool glyphicon glyphicon-flash" href="javascript:;"></span>
+			</div>
+		</section>
+	</body>
+
+</html>

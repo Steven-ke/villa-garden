@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title></title>
+  <style>
+    body,html {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    canvas {
+      background-color: #000;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script src="./utils.js"></script>
+  <script src="./Particle.js"></script>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    let W, H, particles = [], spring = 0.0001;
+    
+    window.onresize = function (){
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      createParticles(W * H / 13000);
+    };
+    
+    window.onresize();
+    
+    function createParticles(num){
+      if(num !== particles.length){
+        particles = [];
+      }
+      for(let i=0; i<num; i++){
+        const size = rp([3, 10], true);
+        particles.push(new Particle({
+          x: rp([0, W], true),
+          y: rp([0, H], true),
+          fillStyle: '#fff',
+          vx: rp([-2, 2]),
+          vy: rp([-2, 2]),
+          r: size,
+          m: size
+        }));
+      }
+    }
+    
+    function startMove(p, i){
+      p.x += p.vx;
+      p.y += p.vy;
+      
+      for(let j=i+1,len=particles.length; j<len; j++){
+        const t = particles[j];
+        checkSpring(p, t);
+        checkParticleHit(p, t);
+      }
+      
+      checkLoop(p, W, H);
+    }
+    
+    function checkSpring(c, t){
+      let dx = t.x - c.x;
+      let dy = t.y - c.y;
+      let dist = Math.sqrt(dx**2 + dy**2);
+      let minDist = W/10; // ?
+      if(dist < minDist){
+        drawLine(c, t, dist, minDist);
+        let ax = dx * spring;
+        let ay = dy * spring;
+        c.vx += ax / c.m;
+        c.vy += ay / c.m;
+        t.vx -= ax / t.m;
+        t.vy -= ay / t.m;
+      }
+    }
+    
+    function drawLine(c, t, dist, minDist){
+      ctx.save();
+      ctx.lineWidth = 2 * Math.max(0, 1 - dist / minDist);
+      ctx.globalAlpha = Math.max(0, 1 - dist / minDist);
+      ctx.strokeStyle = '#fff';
+      ctx.beginPath();
+      ctx.lineTo(c.x, c.y);
+      ctx.lineTo(t.x, t.y);
+      ctx.stroke();
+      ctx.restore();
+    }
+    
+    function drawParticles(p){
+      p.render(ctx);
+    }
+    
+    (function drawFrame(){
+      window.requestAnimationFrame(drawFrame);
+      ctx.clearRect(0, 0, W, H);
+      
+      particles.forEach(startMove);
+      particles.forEach(drawParticles);
+    })();
+  </script>
+</body>
+</html>

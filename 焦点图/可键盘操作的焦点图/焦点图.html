@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			h1{
+				text-align: center;
+			}
+			section{
+				width:800px;
+				height:500px;
+				margin:50px auto;
+				background-color: pink;
+				position: relative;
+				overflow: hidden;
+			}
+			img{
+				width:800px;
+				height:500px;
+			}
+			a{
+				height:50px;
+				text-decoration: none;
+				font-size: 28px;
+				text-align: center;
+				line-height: 50px;
+				position: absolute;
+				color: #FFFFFF;
+				z-index: 10;
+			}
+			a:nth-of-type(1){
+				left: 10px;
+				top:225px;
+			}
+			a:nth-of-type(2){
+				right: 10px;
+				top:225px;
+			}
+			div{
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+		</style>
+		<script id="commomjs" src="commom.js"></script>
+		<script type="text/javascript">
+			window.onload = function(){
+				//获取元素
+				var img = document.querySelectorAll('div');
+				var btn = document.querySelectorAll('a');
+				var n = img.length-1;//因为最后一张图在最上面显示，这里默认n为最后一张图
+				//层级初始化
+				for(var i=0;i<img.length;i++){//给每一张图添加层级
+					img[i].style.zIndex = i;
+				}
+				//按钮点击事件
+				btn[0].onclick = moveLeft;
+				btn[1].onclick = moveRight;
+				//处理键盘上下左右切换事件
+				document.onkeydown = function(ev){
+					var ev= ev||event;
+					if(ev.keyCode==37) moveLeft();
+					if(ev.keyCode==38) moveUp();
+					if(ev.keyCode==39) moveRight();
+					if(ev.keyCode==40) moveDown();
+				}
+				//处理鼠标滑动切换图片事件
+				var box = document.querySelector('section');
+				box.onmousedown = function(ev){//鼠标按下时记录按下的鼠标位置
+					var ev = ev||event;
+					ev.preventDefault();
+					var x1 = ev.clientX;
+					var y1 = ev.clientY;
+					box.onmouseup = function(ev){//鼠标抬起时在此记录抬起位置
+						var ev = ev||event;
+						ev.preventDefault();
+						var x2 = ev.clientX;
+						var y2 = ev.clientY;
+						var x = x2-x1;
+						var y = y2-y1;
+						//根据鼠标移动前后的x，y的值对比图片朝那个方向切换
+						if(x2>x1&&Math.abs(x)>Math.abs(y)){
+							moveRight();
+						}
+						if(x2<x1&&Math.abs(x)>Math.abs(y)){
+							moveLeft();
+						}
+						if(y2>y1&&Math.abs(y)>Math.abs(x)){
+							moveDown();
+						}
+						if(y2<y1&&Math.abs(y)>Math.abs(x)){
+							moveUp();
+						}
+					}
+				}
+				
+				//向右运动切换函数
+				function moveRight(){
+					MTween({
+						obj:img[n],
+						attrs:{
+							left:img[n].offsetWidth+'px'
+						},
+						duration:800,
+						callBack:function(){
+								
+							for(var i=0;i<img.length;i++){
+								img[i].style.zIndex = parseInt(img[i].style.zIndex)+1;
+								if(i==n){
+									continue;
+								}
+							}
+							img[n].style.left = 0;
+							img[n].style.zIndex = 0;
+							n--
+							if(n<0){
+								n = img.length-1;
+							}
+						}
+					})
+				}
+				//向左运动切换函数
+				function moveLeft(){
+					MTween({
+						obj:img[n],
+						attrs:{
+							left:-img[n].offsetWidth+'px'
+						},
+						duration:800,
+						callBack:function(){
+								
+							for(var i=0;i<img.length;i++){
+								img[i].style.zIndex = parseInt(img[i].style.zIndex)+1;
+								if(i==n){
+									continue;
+								}
+							}
+							img[n].style.left = 0;
+							img[n].style.zIndex = 0;
+							n--
+							if(n<0){
+								n = img.length-1;
+							}
+						}
+					})
+				}
+				//向上运动切换函数
+				function moveUp(){
+					MTween({
+						obj:img[n],
+						attrs:{
+							top:-img[n].offsetHeight+'px'
+						},
+						duration:800,
+						callBack:function(){
+								
+							for(var i=0;i<img.length;i++){
+								img[i].style.zIndex = parseInt(img[i].style.zIndex)+1;
+								if(i==n){
+									continue;
+								}
+							}
+							img[n].style.top = 0;
+							img[n].style.zIndex = 0;
+							n--
+							if(n<0){
+								n = img.length-1;
+							}
+						}
+					})
+				}
+				//向下运动切换函数
+				function moveDown(){
+					MTween({
+						obj:img[n],
+						attrs:{
+							top:img[n].offsetHeight+'px'
+						},
+						duration:800,
+						callBack:function(){
+								
+							for(var i=0;i<img.length;i++){
+								img[i].style.zIndex = parseInt(img[i].style.zIndex)+1;
+								if(i==n){
+									continue;
+								}
+							}
+							img[n].style.top = 0;
+							img[n].style.zIndex = 0;
+							n--
+							if(n<0){
+								n = img.length-1;
+							}
+						}
+					})
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<h1>键盘操作及鼠标滑动可切换图片</h1>
+		<section>
+			<div><img src="img/1.jpg" alt="" /></div>
+			<div><img src="img/2.jpg" alt="" /></div>
+			<div><img src="img/3.jpg" alt="" /></div>
+			<div><img src="img/4.jpg" alt="" /></div>
+			<a href="javascript:;">&lt;</a>
+			<a href="javascript:;">&gt;</a>
+		</section>
+	</body>
+</html>

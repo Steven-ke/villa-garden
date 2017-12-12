@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <style type="text/css">
+            section {
+                width: 800px;
+                height: 550px;
+                padding: 80px;
+                padding-bottom: 30px;
+                box-sizing: border-box;
+                margin: 50px auto;
+                background-size: 100%;
+                background-color: skyblue;
+            }
+            
+            .head {
+                background: #FFFFFF;
+                height: 150px;
+                padding: 50px;
+                box-sizing: border-box;
+                border-radius: 20px;
+                margin-bottom: 30px;
+            }
+            
+            input,
+            select {
+                margin: 0;
+                padding: 0;
+                color: #87DAF8;
+                font-weight: bold;
+                border: none;
+                outline: none;
+                background-color: transparent;
+            }
+            
+            label {
+                font-weight: bold;
+                color: #000000;
+                float: left;
+                margin-left: 30px;
+                margin-bottom: 10px;
+            }
+            
+            label .add {
+                width: 160px;
+                height: 30px;
+                margin-left: 40px;
+                padding-left: 0;
+                background-color: #2ec2fe;
+                border-radius: 15px;
+                color: #ffffff;
+                cursor: pointer;
+            }
+            
+            label>input {
+                width: 160px;
+                height: 30px;
+                padding-left: 20px;
+                box-sizing: border-box;
+                border-radius: 15px;
+                border: 1px solid #87DAF8;
+            }
+            
+            select {
+                height: 30px;
+                padding-left: 20px;
+                box-sizing: border-box;
+                border-radius: 15px;
+                border: 1px solid #87DAF8;
+            }
+            
+            option {
+                display: inline-block;
+                float: left;
+                padding: 5px;
+            }
+            
+            .list {
+                font: 16px/26px "微软雅黑";
+            }
+            
+            .list div {
+                float: left;
+            }
+            
+            .choose_box {
+                padding-right: 60px;
+            }
+            
+            .ID_box {
+                padding-right: 60px;
+            }
+            
+            .name_box {
+                padding-right: 60px;
+            }
+            
+            .age_box {
+                padding-right: 60px;
+            }
+            
+            .sex_box {
+                width: 161px;
+            }
+            
+            .list dt {
+                height: 30px;
+                padding-left: 20px;
+                padding-top: 3px;
+                border-radius: 5px;
+                box-sizing: border-box;
+                background-color: #3A95AE;
+                margin-bottom: 5px;
+                color: #FFFFFF;
+            }
+            
+            .choose,
+            .choose1 {
+                display: inline-block;
+                vertical-align: middle;
+                width: 13px;
+                height: 13px;
+                border: 1px solid #87DAF8;
+            }
+            
+            dd {
+                margin: 0;
+                margin-bottom: 5px;
+                height: 30px;
+                color: #87DAF8;
+                font-weight: bold;
+                padding-left: 20px;
+                padding-top: 3px;
+                border-radius: 5px;
+                box-sizing: border-box;
+                background-color: #FFFFFF;
+            }
+            
+            dd>div:nth-of-type(1) {
+                width: 85px;
+            }
+            
+            dd>div:nth-of-type(2) {
+                width: 62px;
+                text-align: center;
+                height:100%;
+                overflow: hidden;
+            }
+            
+            dd>div:nth-of-type(3) {
+                width: 117px;
+                text-align: center;
+                height:100%;
+                overflow: hidden;
+            }
+            
+            dd>div:nth-of-type(4) {
+                width: 77px;
+                text-align: center;
+                height:100%;
+                overflow: hidden;
+            }
+            
+            dd>div:nth-of-type(5) {
+                width: 102px;
+                text-align: center;
+            }
+            
+            dd>div:nth-of-type(6) {
+                width: 160px;
+                text-align: center;
+            }
+            
+            strong {
+                padding-left: 10px;
+                padding-right: 10px;
+                cursor: pointer;
+            }
+        </style>
+        <script>
+            window.onload = function() {
+                /*
+                 * 
+                 * 1：获取姓名，年龄，性别输入框
+                 * 2：点击添加按钮判断内容是否符合规范
+                 * 3：点击添加按钮生成list列表
+                 * 4：点击选择框按钮事件
+                 * 5：点击上移下移按钮事件
+                 * 6：点击删除按钮事件
+                 * 
+                 * */
+                //1：获取姓名，年龄，性别输入框
+                var user = $('#user');
+                var age = $('#age');
+                var add = $('#add');
+                var sex = $('.sex_box')[0];
+                var select1 = $('select')[0];
+                var choose1 = $('.choose1')[0];
+                var list = $('dl')[0]
+                var choose = document.getElementsByTagName('em');
+                var strong = document.getElementsByTagName('strong');
+                var num = 0;
+                var count = 0
+                add.onclick = function() {
+                    //2：点击添加按钮判断内容是否符合规范
+                    if(user.value == '') { //姓名框不能为空
+                        alert('别闹~~快输入姓名')
+                    } else if(age.value == '' || typeof(Number(age.value)) !== 'number') { //年龄框必须输入数字
+                        alert('自己多大心里没数啊？')
+//                    else if(sex.value){
+//                        alert('不好意思选女博士？？')
+                    }else {
+                        //这里面处理生成下面的列表
+                        var dd = document.createElement('dd');
+                        num++; //每次生成一组数据 前面的序号加1
+                        dd.innerHTML = '<div>' +
+                            '<em class="choose"></em>' +
+                            '</div>' +
+                            '<div class="num">' + num + '</div>' +
+                            '<div>' + user.value + '</div>' +
+                            '<div>' + age.value + '</div>' +
+                            '<div>' + sex.value + '</div>' +
+                            '<div>' +
+                            '<strong>↑</strong>' +
+                            '<strong>↓</strong>' +
+                            '<strong>X</strong>' +
+                            '</div>'
+                        //3：点击添加按钮生成list列表
+                        list.appendChild(dd)
+                        user.value = '';
+                        age.value = '';
+                        //当全选按钮选择后再次添加新的列表内容 就取全选按钮的状态
+                        choose1.style.backgroundColor = '';
+                        list_choose();
+                        handle();
+                    }
+                }
+
+
+                //4：点击选择框按钮事件
+                choose1.onclick = function() { //处理全选按钮
+                    if(!this.state){//这里初始状态必须是默认null。也就是假的状态，如果设置初始状态在点击添加按钮时会改变这个按钮的状态。
+                        this.style.backgroundColor = '#FFB20F';//改变状态
+                        for(var i = 0; i < choose.length; i++) {//给所有列表项添加选中状态
+                            choose[i].style.backgroundColor = '#FFB20F';
+                            choose[i].state = true;//注意改变所有列表项的状态
+                            count=choose.length;//还要注意改变计数的值
+                        }
+                        this.state=true;
+                    }else{
+                        this.style.backgroundColor = '';//同上
+                        for(var i = 0; i < choose.length; i++) {//同上
+                            choose[i].style.backgroundColor = '';//同上
+                            choose[i].state = false;//同上
+                            count=0;//同上
+                        }
+                        this.state=false;
+                    }
+                }
+                function list_choose() {//处理列表项选择框的选择按钮状态
+                    for(var i = 0; i < choose.length; i++) {
+                        choose[i].onclick = function() {
+                            if(!this.state){//这里的this.state为默认值underfind，不可以在点击是设置一个state的状态，否则在点击添加按钮的时候会改变这个状态
+                                this.style.backgroundColor = '#FFB20F';
+                                this.state = true;//改变状态
+                                count++;//计数+1
+                            }else{
+                                this.style.backgroundColor = '';
+                                this.state = false;//改变状态
+                                count--;//计数-1
+                                choose1.style.backgroundColor = '';//改变全选按钮的状态
+                                choose1.state = false;//改变全选按钮的状态
+                            }
+                            if(count==choose.length){//当列表项全都是true的状态时，让全选按钮变为选中状态
+                                choose1.style.backgroundColor = '#FFB20F';
+                                choose1.state=true;
+                            }
+                        }
+                    }
+                }
+                
+                //5：点击上移下移按钮事件
+                function handle(){
+                    var dl = document.querySelector('dl')
+                    var dd = document.querySelectorAll('dd')
+                    if(strong.length>0){//这里判断是否存在strong。不加先判断的话会报错
+                        for(var i=0;i<strong.length;i++){//循环所有的strong
+                            if(i%3==0){//这里的这个i%3==0判断的是每个dd里的第一个strong；
+                                strong[i].onclick = function(){
+                                    //判断点击向上移动的时候如果是dl的第一个列表项就不再往上移动了
+                                    if(this.parentNode.parentNode.previousElementSibling==dl.firstElementChild){
+                                        alert('已经第一个了')
+                                        return;
+                                    } 
+                                    //这里是让点击的这个列表项移动到他的上一个元素前面
+                                    list.insertBefore(this.parentNode.parentNode, this.parentNode.parentNode.previousElementSibling);
+                                    sort();//然后重新把id序号更改过来
+                                }
+                            }
+                            if(i%3==1){//这里的这个i%3==1判断的是每个dd里的第二个strong；
+                                strong[i].onclick = function(){
+                                    //判断点击向下移动的时候如果是dl的最后一个列表项就不再往下移动了
+                                    if(!this.parentNode.parentNode.nextElementSibling){
+                                        alert('已经最后一个了')
+                                        return;
+                                    }
+                                    //这里是让点击的这个列表项移动到他的下一个元素后面
+                                    list.insertBefore(this.parentNode.parentNode, this.parentNode.parentNode.nextElementSibling.nextElementSibling);
+                                    sort();//然后重新把id序号更改过来
+                                }
+                            }
+                            if(i%3==2){//这里的这个i%3==2判断的是每个dd里的第三个strong；
+                                strong[i].onclick = function(){ 
+                                    list.removeChild(this.parentNode.parentNode);
+                                    sort();
+                                    var choose = document.querySelectorAll('.choose')
+                                    if(this.parentNode.parentNode.firstElementChild.firstElementChild.state==true){
+                                        count--;//注意这里每删掉一个列表项时要把选择按钮的计数更改-1。
+                                    }
+                                    if(count==choose.length){//当列表项全都是true的状态时，让全选按钮变为选中状态
+                                        choose1.style.backgroundColor = '#FFB20F';
+                                        choose1.state=true;
+                                    }
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+                //处理列表项上下移动的时候ID序号不变
+                function sort(){
+                    var num = document.querySelectorAll('.num');
+                        for(var i=0;i<num.length;i++){
+                            num[i].innerHTML = i+1
+                        }
+                }
+/*
+* 获取元素集合
+* */
+function $(str){
+
+    var dom;//储存找到的元素
+
+    if(str.charAt(0)=='.'){
+        dom = document.getElementsByClassName(str.slice(1));
+
+    }else if(str.charAt(0)=='#'){
+        dom = document.getElementById(str.slice(1));
+    }else{
+        dom = document.getElementsByTagName(str);
+    }
+
+    return dom;//把获取到的元素给到需要用的人
+}
+            }
+        </script>
+    </head>
+
+    <body>
+        <section>
+            <div class="head">
+                <form action="">
+                    <label for="user">
+                        姓名: <input id="user" type="text" value="" />
+                        </label>
+                    <label for="age">
+                        年龄: <input id="age" type="number" value="" />
+                    </label>
+                    <label for="sex_box">
+                        性别: <select class="sex_box" id="sex_box" name="sex">
+                                <option value="女">女</option>
+                                <option value="男">男</option>
+                                <option value="女博士">女博士 </option>
+                            </select>
+                    </label>
+                    <label for="add ">
+                           <input class="add" id="add" type="button" value="添 加" />
+                       </label>
+                </form>
+            </div>
+            <dl class="list">
+                <dt>
+                    <div class="choose_box">
+                        <span class="choose1"></span>
+                        <span>全选</span>
+                    </div>
+                    <div class="ID_box">
+                        <span>ID</span>
+                    </div>
+                    <div class="name_box">
+                        <span>姓名</span>
+                    </div>
+                    <div class="age_box">
+                        <span>年龄</span>
+                    </div>
+                    <div style="width:135px;" class="sex_box">
+                        <span>性别</span>
+                    </div>
+                    <div class="handle_box">
+                        <span>操作</span>
+                    </div>
+                </dt>
+                <!--<dd>
+                    <div>
+                        <span class="choose"></span>
+                    </div>
+                    <div>1</div>
+                    <div>多多</div>
+                    <div>80</div>
+                    <div>男</div>
+                    <div>
+                        <strong>↑</strong>
+                        <strong>↓</strong>
+                        <strong>X</strong>
+                    </div>
+                </dd>
+                <dd>
+                    <div>
+                        <span class="choose"></span>
+                    </div>
+                    <div>2</div>
+                    <div>强强</div>
+                    <div>8</div>
+                    <div>未知</div>
+                    <div>
+                        <strong>↑</strong>
+                        <strong>↓</strong>
+                        <strong>X</strong>
+                    </div>
+                </dd>
+                <dd>
+                    <div>
+                        <span class="choose"></span>
+                    </div>
+                    <div>3</div>
+                    <div>飞飞</div>
+                    <div>18</div>
+                    <div>男</div>
+                    <div>
+                        <strong>↑</strong>
+                        <strong>↓</strong>
+                        <strong>X</strong>
+                    </div>
+                </dd>-->
+            </dl>
+        </section>
+
+    </body>
+
+</html>

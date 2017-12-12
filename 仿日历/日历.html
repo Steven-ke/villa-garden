@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			body{
+				background:url(1.jpg);
+			}
+			ul,
+			ol,
+			h3,
+			p {
+				margin: 0;
+				padding: 0;
+				list-style: none;
+			}
+			
+			a {
+				text-decoration: none;
+				color: #ffffff;
+			}
+			
+			#calendar {
+				width: 430px;
+				height: 589px;
+				/*margin: 0px auto;*/
+				float: right;
+				padding: 10px;
+				box-sizing: border-box;
+				background-color: rgba(237, 75, 75, 0.7);
+				
+			}
+			
+			#calendar .time_box {
+				height: 150px;
+				/*background: blue;*/
+				color: #FFFFFF;
+			}
+			
+			.time_box .time {
+				font: 40px/40px arial;
+				letter-spacing: 5px;
+			}
+			
+			.time_box .date {
+				font: 16px/40px arial;
+			}
+			
+			.time_box .year_month {
+				font: 18px/60px arial;
+			}
+			
+			.year_month .left {
+				float: left;
+				font: 22px/60px arial;
+			}
+			
+			.year_month .right_up,
+			.year_month .right_down {
+				float: right;
+				font: 40px/60px "微软雅黑";
+				padding-left: 10px;
+				padding-right: 10px;
+			}
+			ol ,ul{
+				overflow: hidden;
+			}
+			ul{
+				height:348px;
+			}
+			ol li {
+				float: left;
+				text-align: center;
+				color: #FFFFFF;
+				font: 24px/30px arial;
+				padding: 17px;
+			}
+			
+			ul li {
+				float: left;
+				width: 58px;
+				height: 58px;
+				box-sizing: border-box;
+				text-align: center;
+				color: #FFFFFF;
+				font: 24px/47px arial;
+			}
+		</style>
+		<script src="commom.js"></script>
+		<script src="tween.js"></script>
+		<script>
+			window.onload = function() {
+				var time = $('.time')[0]; //获取元素
+				var DateStr = $('.date')[0];
+				var YearMon = $('.left')[0];
+				var btnUp = $('.right_up')[0]; //获取上一月
+				var btnDown = $('.right_down')[0]; //获取下一月
+				var nian = $('em')[0]; //获取em年份
+				var yue = $('em')[1]; //获取em月份
+
+				Time()
+				var timer1 = setInterval(Time, 1000)
+
+				function Time() {
+
+					// 时  分 秒   年 月  日 周
+					var d = new Date();
+					var h = reviseZero(d.getHours());
+					var m = reviseZero(d.getMinutes());
+					var s = reviseZero(d.getSeconds());
+					var Y = d.getFullYear();
+					var M = d.getMonth() + 1;
+					var D = d.getDate();
+					var W = d.getDay();
+
+					//处理星期几改为字符串
+					if(W === 0) W = '星期日';
+					if(W === 1) W = '星期一';
+					if(W === 2) W = '星期二';
+					if(W === 3) W = '星期三';
+					if(W === 4) W = '星期四';
+					if(W === 5) W = '星期五';
+					if(W === 6) W = '星期六';
+
+					//处理小于10的数字
+					function reviseZero(t) {
+						return t < 10 ? t = '0' + t : t = '' + t;
+					}
+					timeString = h + ':' + h + ':' + s; //时  分  秒
+					dateString = Y + '年' + M + '月' + D + '日，' + W; //年  月  日
+					for(var i = 0; i < timeString.length; i++) { //循环添加时间
+						if(timeString.charAt(i) == ':') {
+							continue;
+						}
+						time.innerHTML = timeString;
+						DateStr.innerHTML = dateString;
+					}
+				}
+
+				var nowMonth = 11; //默认月份
+				showMonth(nowMonth); //默认显示月份
+				//下一月的点击事件
+				btnDown.onclick = function() {
+					nowMonth++
+					showMonth(nowMonth);
+				}
+				btnUp.onclick = function() {
+					nowMonth--
+					showMonth(nowMonth);
+				}
+				//月份的日期
+				function showMonth(nm) {
+					//获取多少天
+					var count = allDate(nm);
+					//显示年
+					showYear(nian, count.date);
+					//显示月份
+					showM(yue, count.date);
+					//星期几
+					var week = showWeek(nowMonth);
+					ul = $('ul')[0];
+					//生成页面
+					var html = '';
+					var a = allDate(nowMonth - 1);
+					for(var i = 0; i < week; i++) {
+						html = '<li class="prev" style="color: #999999;">' + (a.num - i) + '</li>' + html;
+					}
+					for(var i = 1; i < count.num + 1; i++) {
+						html += '<li>' + (i) + '</li>';
+					}
+					for(var i = 0; i <42-week-count.num + 1; i++) {
+						html += '<li class="prev" style="color: #999999;">' + (i+1) + '</li>';
+					}
+					ul.innerHTML = html;
+				}
+
+				function showYear(obj, date) {
+					//显示年份的页面元素
+					obj.innerHTML = date.getFullYear();
+				}
+
+				function showM(obj, date) {
+					//获取年份的日期对象
+					obj.innerHTML = date.getMonth() + 1;
+				}
+
+				function showWeek(nm) {
+					var c = new Date();
+					c.setMonth(nm - 1); //设置月份
+					c.setDate(1); //在把日期设置为1号
+					return c.getDay(); //最后把1号的星期几返出去
+				}
+
+				//获取某月天数
+				function allDate(nm) {
+					//获取11月的总共天数
+					var date = new Date(); //先获取日期对象实例
+					//把月份设置到下个月
+					date.setMonth(nm); //获取当前月
+
+					//找到要获取的月份的最后一天
+					date.setDate(0);
+
+					return {
+						num: date.getDate(),
+						date: date
+					}
+				}
+
+			}
+		</script>
+	</head>
+
+	<body style="background-color: skyblue;">
+		<section id="calendar">
+			<header class="time_box">
+				<p class="time">88:88:8</p>
+				<p class="date"></p>
+				<p class="year_month">
+					<span class="left">
+						<em>2000</em>年
+						<em>11</em>月
+					</span>
+					<a href="javascript:;" class="right_up">&and;</a>
+					<a href="javascript:;" class="right_down">&or;</a>
+				</p>
+			</header>
+			<ol>
+				<li>日</li>
+				<li>一</li>
+				<li>二</li>
+				<li>三</li>
+				<li>四</li>
+				<li>五</li>
+				<li>六</li>
+			</ol>
+			<ul>
+				<li>1</li>
+				<li>1</li>
+			</ul>
+		</section>
+	</body>
+
+</html>
